@@ -1,10 +1,8 @@
-import express from 'express'
-import { JSONRPCRequest, JSONRPCResponse, JSONRPCServer } from 'json-rpc-2.0'
+import fastify from 'fastify'
+import { JSONRPCRequest, JSONRPCServer } from 'json-rpc-2.0'
 import fs from 'node:fs'
 import { chunkStringFixed, logger, monkeyStringify } from './helper'
 import { Readable } from 'node:stream'
-
-const app = express()
 
 export interface ServerParams {
   session: string | undefined
@@ -60,11 +58,12 @@ fastify.post('*', (req, reply) => {
 
   const session = req.headers['x-gatewaysession'] as string | undefined
 
-  RPC.id = RPC.id?.toString() || null
+  const method = jsonRPCRequest.method
 
-  server.receive(RPC, { session }).then((response) => {
+  server.receive(jsonRPCRequest, { session }).then((response) => {
     logger.debug(method)
-    logger.debug(RPC.params)
+    logger.debug(jsonRPCRequest.params)
+    // console.log('res', response?.result)
 
     if (!response || response.error) {
       logger.error(`Error ${response?.error.message}`)
