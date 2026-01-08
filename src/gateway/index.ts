@@ -1,4 +1,4 @@
-import fastify from 'fastify'
+import Fastify from 'fastify'
 import { JSONRPCRequest, JSONRPCServer } from 'json-rpc-2.0'
 import fs from 'node:fs'
 import { chunkStringFixed, logger, monkeyStringify } from './helper'
