@@ -31,10 +31,10 @@ export default {
 
     // await db.$transaction(
     //   Object.entries(params.stats)
-    //     .filter(([flag]) => {
-    //       // Skip all of the Mission Available flags as the game spams them
-    //       if (flag.includes('Available')) return
-    //     })
+    //     // .filter(([flag]) => {
+    //     //   // Skip all of the Mission Available flags as the game spams them
+    //     //   if (flag.includes('Available')) return
+    //     // })
     //     .map(([flag, value]) => {
     //       return db.userStats.upsert({
     //         where: { userId_flag: { userId: user.personaId, flag } },

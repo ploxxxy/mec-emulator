@@ -22,13 +22,14 @@
     "pino-pretty": "^11.2.2",
     "prettier": "^3.2.5",
     "prettier-eslint": "^16.3.0",
-    "prisma": "^5.17.0",
+    "prisma": "^6.6.0",
     "tsx": "^4.10.1",
     "typescript-eslint": "^7.8.0"
   },
   "dependencies": {
-    "@prisma/client": "5.17.0",
-    "express": "^5.0.1",
+    "@prisma/client": "6.6.0",
+    "dotenv": "^16.5.0",
+    "fastify": "^4.27.0",
     "json-rpc-2.0": "^1.7.0",
     "pino": "^9.3.2",
     "tdf.js": "github:ploxxxy/tdf.js",

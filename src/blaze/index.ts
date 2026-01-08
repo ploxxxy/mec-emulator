@@ -10,6 +10,8 @@ import * as Util from './components/util'
 import { logger, logPacket } from './helper'
 import './redirector'
 
+const blazePort: number = parseInt(process.env.BLAZE_PORT ?? "25565")
+
 const server = net.createServer((socket) => {
   let buffer = Buffer.alloc(0)
 
@@ -49,10 +51,10 @@ const server = net.createServer((socket) => {
 })
 
 server.on('listening', () => {
-  logger.info('Server started')
+  logger.info(`Server started on port ${blazePort}`)
 })
 
-server.listen(25565)
+server.listen(blazePort)
 
 const handleIncomingPacket = (packet: Blaze.Packet, socket: net.Socket) => {
   logPacket(packet.header, packet.payload, true)

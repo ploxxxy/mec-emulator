@@ -3,6 +3,10 @@ import { Socket } from 'node:net'
 import * as Blaze from '../blaze'
 import * as UserSessions from './user-sessions'
 
+const personaId: number = parseInt(process.env.PERSONA_ID ?? "133713371337");
+const userId: number = parseInt(process.env.USER_ID ?? "133713371337")
+const personaUsername: string = process.env.PERSONA_USERNAME ?? "ploxxxxxxy";
+
 export enum Commands {
   login = 10,
   trustedLogin = 11,
@@ -89,7 +93,7 @@ const login = () => {
       // True if this is the first time the user has logged on to this Blaze server on the Console (not a Web login) & has external data set
       new TDFInteger('1CON', 0),
       // The unique Nucleus persona id assigned to the persona associated with this session
-      new TDFInteger('BUID', 1011786733),
+      new TDFInteger('BUID', personaId),
       // True if this is the first time the user has logged on to this Blaze server
       new TDFInteger('FRST', 0),
       // The SessionKey created by the Blaze server for this session
@@ -103,19 +107,19 @@ const login = () => {
       // The persona details for the persona associated with this session
       new TDFStruct('PDTL', [
         // Persona name
-        new TDFString('DSNM', 'ploxxxxxxy'),
+        new TDFString('DSNM', personaUsername),
         // Last authentication timestamp for persona
         new TDFInteger('LAST', 0),
         // Nucleus personaId
-        new TDFInteger('PID ', 1011786733),
+        new TDFInteger('PID ', personaId),
         new TDFInteger('PLAT', 4),
         // The status of persona.
         new TDFInteger('STAS', 0),
         //  External reference value such as XUID
-        new TDFInteger('XREF', 2407107883),
+        new TDFInteger('XREF', userId),
       ]),
       // The Nucleus account id for the user associated with this session
-      new TDFInteger('UID ', 2407107883),
+      new TDFInteger('UID ', userId),
     ]),
     // True if the user old enough to opt in to receive third party email
     new TDFInteger('SPAM', 0),

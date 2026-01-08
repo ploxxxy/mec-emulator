@@ -38,6 +38,8 @@ export const handleCommand = (
   }
 }
 
+const personaId: number = parseInt(process.env.PERSONA_ID ?? "133713371337");
+
 const getLists = () => {
   const header = {
     payloadSize: 369,
@@ -55,7 +57,7 @@ const getLists = () => {
       [
         new TDFStruct('INFO', [
           // Unique blaze object id for the association list.
-          new TDFIntVector3('BOID', [25, 1, 1011786733]),
+          new TDFIntVector3('BOID', [25, 1, personaId]),
           // Flags that represent additional information about this AssociationList.
           new TDFInteger('FLGS', 4),
           // Id for the association list.
@@ -106,7 +108,7 @@ const getLists = () => {
       ],
       [
         new TDFStruct('INFO', [
-          new TDFIntVector3('BOID', [25, 5, 1011786733]),
+          new TDFIntVector3('BOID', [25, 5, personaId]),
           new TDFInteger('FLGS', 2),
           new TDFStruct('LID ', [
             new TDFString('LNM ', 'followList'),
@@ -122,7 +124,7 @@ const getLists = () => {
       ],
       [
         new TDFStruct('INFO', [
-          new TDFIntVector3('BOID', [25, 4, 1011786733]),
+          new TDFIntVector3('BOID', [25, 4, personaId]),
           new TDFInteger('FLGS', 0),
           new TDFStruct('LID ', [
             new TDFString('LNM ', 'communicationBlockList'),

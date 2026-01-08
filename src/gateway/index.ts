@@ -1,7 +1,8 @@
 import express from 'express'
 import { JSONRPCRequest, JSONRPCResponse, JSONRPCServer } from 'json-rpc-2.0'
 import fs from 'node:fs'
-import { logger } from './helper'
+import { chunkStringFixed, logger, monkeyStringify } from './helper'
+import { Readable } from 'node:stream'
 
 const app = express()
 
@@ -28,23 +29,36 @@ for (const folder of folders) {
   }
 }
 
-function insertFloats(data: JSONRPCResponse | null) {
-  const newData = JSON.stringify(data)
-    .replace(/("q[x-z]":0),/g, '$1.0,')
-    .replace(/("p[f-g]_.*?":\d*)/g, '$1.0')
-  return newData
-}
+const fastify = Fastify({
+  // logger: true,
+})
 
-app.use(express.json())
+fastify.options('*', (req, reply) => {
+  reply.header('Access-Control-Allow-Origin', '*')
+  reply.header('Access-Control-Allow-Methods', 'POST')
+  reply.header('Access-Control-Allow-Headers', 'Content-Type, X-GatewaySession')
+  reply.send()
+})
 
-app.post('/gatewayApi', (req, res) => {
-  if (req.header('content-type') === 'application/x-encrypted') {
-    res.send({ jsonrpc: '2.0', id: null, result: null })
+fastify.addContentTypeParser(
+  'application/x-encrypted',
+  { parseAs: 'buffer' },
+  (req, body, done) => {
+    logger.debug('Received encrypted request')
+    console.log(body.toString('hex'))
+
+    // reply.send({ jsonrpc: '2.0', id: null, result: null })
+    done(null, req.body)
   }
+)
 
-  const RPC = req.body as JSONRPCRequest
-  const session = req.header('x-gatewaysession') as string | undefined
-  const method = RPC.method
+fastify.post('*', (req, reply) => {
+  const jsonRPCRequest = req.body as JSONRPCRequest
+
+  // original server behavior
+  jsonRPCRequest.id = jsonRPCRequest.id?.toString() || null
+
+  const session = req.headers['x-gatewaysession'] as string | undefined
 
   RPC.id = RPC.id?.toString() || null
 
@@ -56,16 +70,38 @@ app.post('/gatewayApi', (req, res) => {
       logger.error(`Error ${response?.error.message}`)
     }
 
-    res.set('Content-Type', 'application/json')
-    res.set('Access-Control-Allow-Origin', '*')
+    reply.raw.setHeader('Date', new Date().toUTCString())
+    reply.raw.setHeader('Content-Type', 'application/json;charset=utf-8')
+    reply.raw.setHeader('Transfer-Encoding', 'chunked')
+    reply.raw.setHeader('Connection', 'close')
+    reply.raw.setHeader('Access-Control-Allow-Origin', '*')
 
-    res.write(insertFloats(response))
-    res.end()
+    if (!response) {
+      return reply.send(
+        // chunkStringFixed(
+          monkeyStringify({ jsonrpc: '2.0', id: null, result: null })
+        // )
+      )
+    }
+
+    return reply.send(
+      // chunkStringFixed(
+        monkeyStringify(response as unknown as Record<string, unknown>)
+      // )
+    )
+    // return reply.send(response)
   })
 })
 
-app.listen(3000)
+try {
+  const nodePort: number = parseInt(process.env.GATEWAY_PORT ?? "3000")
+  fastify.listen({ port: nodePort, host: '0.0.0.0' })
+  logger.debug(`Gateway listening on port ${nodePort}`)
+} catch (err) {
+  fastify.log.error(err)
+  process.exit(1)
+}
 
 export function getUserFromSession(sessionId: string) {
-  return '1011786733'
+  return process.env.PERSONA_ID ?? "133713371337"
 }

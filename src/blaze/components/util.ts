@@ -11,6 +11,9 @@ import { Socket } from 'node:net'
 import * as Blaze from '../blaze'
 import * as UserSessions from './user-sessions'
 
+const nodePort: number = parseInt(process.env.GATEWAY_PORT ?? "3000")
+const personaId: number = parseInt(process.env.PERSONA_ID ?? "133713371337");
+
 export enum Commands {
   fetchClientConfig = 1,
   ping = 2,
@@ -100,14 +103,14 @@ export const fetchClientConfig = (value: string) => {
           bugSentryDisableCrashDumpCollection: 'true',
           bugSentryDisableGpuHangReports: 'true',
           engagementManagerApiEndpointUrlBase:
-            'http://localhost:4000/engagementManager',
+            'http://' + (process.env.HOSTNAME ?? "localhost") + ':4000/engagementManager',
           engagementManagerClientId: 'mirrorsedgecatalyst',
-          gatewayApiEndpointUrl: 'http://localhost:3000/gatewayApi',
+          gatewayApiEndpointUrl: 'http://' + (process.env.HOSTNAME ?? "localhost") + ':' + nodePort + '/gatewayApi',
           gatewayClientId: 'pamplona-backend-as-user-pc',
-          gatewayUploadEndpointUrl: 'http://localhost:5000/gatewayUpload',
+          gatewayUploadEndpointUrl: 'http://' + (process.env.HOSTNAME ?? "localhost") + ':5000/gatewayUpload',
           messageManagerFetchMessagesIntervalTime: '300.0',
           messageManagerTransientMessagesToFollowers: 'false',
-          npsWebUrlBase: 'http://localhost:6000/npsWeb',
+          npsWebUrlBase: 'http://' + (process.env.HOSTNAME ?? "localhost") + ':6000/npsWeb',
           presenceUpdatePositionInterval: '10.0',
           telemetryProjectId: '308903',
         })
@@ -309,7 +312,7 @@ export const postAuth = () => {
       // Key
       new TDFString(
         'SKEY',
-        '1011786733,10.23.15.2:8999,mirrorsedgecatalyst-2016-pc,10,50,50,50,50,0,12'
+        process.env.PERSONA_ID + ',10.23.15.2:8999,mirrorsedgecatalyst-2016-pc,10,50,50,50,50,0,12'
       ),
     ]),
     // User options
@@ -317,7 +320,7 @@ export const postAuth = () => {
       // TelemetryOpt
       new TDFInteger('TMOP', 0),
       // The ID of the user whose data is to be fetched, 0 means own's settings
-      new TDFInteger('UID ', 1011786733),
+      new TDFInteger('UID ', personaId),
     ]),
   ]
 

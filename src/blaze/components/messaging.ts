@@ -63,7 +63,7 @@ const sendMessage = (wdyw: number, packet: Blaze.Packet) => {
           new TDFStruct('PYLD', [
             // Attribute map
             new TDFDictionary('ATTR', TDFType.Integer, TDFType.String, 1, {
-              0: '{"id":"6e200b00-9e83-4ce3-9265-4195d236a062","eid":"1011786733","ugcType":"ReachThis"}',
+              0: '{"id":"6e200b00-9e83-4ce3-9265-4195d236a062","eid":"' + (process.env.PERSONA_ID ?? "133713371337") + '","ugcType":"ReachThis"}',
             }),
             // Message flags
             new TDFInteger('FLAG', 0),
@@ -72,7 +72,7 @@ const sendMessage = (wdyw: number, packet: Blaze.Packet) => {
             // Message tag
             new TDFInteger('TAG ', 65542),
             // Used to specify message target entity ids.
-            new TDFList('TIDS', TDFType.Integer, 1, [1011786733]),
+            new TDFList('TIDS', TDFType.Integer, 1, [process.env.PERSONA_ID]),
             // Used to specify the entity type of target entity ids.
             new TDFIntVector2('TTYP', [30722, 1]),
             // Message type

@@ -1,0 +1,28 @@
+services:
+  pamplona-future-db:
+    image: postgres:17
+    container_name: pamplona-future-db
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+  pamplona-future:
+    build: .
+    depends_on:
+      - pamplona-future-db
+    container_name: pamplona-future
+    ports:
+      - "${GATEWAY_PORT}:${GATEWAY_PORT}"
+      - "${BLAZE_PORT}:${BLAZE_PORT}"
+      - "42230:42230"
+    env_file:
+      - .env
+    volumes:
+      - ./:/app
+    command: sh -c "npm run resetdb && npm run dev"
+    restart: unless-stopped
+
+volumes:
+  pgdata:

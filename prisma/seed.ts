@@ -14,8 +14,8 @@ async function main() {
 
   await prisma.user.create({
     data: {
-      name: 'ploxxxxxxy',
-      personaId: '1011786733',
+      name: process.env.PERSONA_USERNAME ?? "ploxxxxxxy",
+      personaId: process.env.PERSONA_ID ?? "133713371337",
       division: 'Gold',
       divisionRank: 1,
       tagData: {

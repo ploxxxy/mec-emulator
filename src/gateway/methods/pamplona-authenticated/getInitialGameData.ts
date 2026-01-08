@@ -1,6 +1,6 @@
 import { getUserFromSession } from '../..'
 import db from '../../../common/prisma'
-import { extractUGCData } from '../../helper'
+import { extractUGCData, Float } from '../../helper'
 
 export default {
   name: 'PamplonaAuthenticated.getInitialGameData',
@@ -59,15 +59,12 @@ export default {
       throw new Error('User not found')
     }
 
-    const userStats = user.userStats[0]['stats']
+    const userStats: { [key: string]: Float } = {}
+    for (const userFlag of user.userStats) {
+      userStats[userFlag.flag] = new Float(userFlag.value)
+    }
 
     const promotedUGC = await db.ugc.findMany({
-      take: 100,
-      where: {
-        NOT: {
-          creatorId: personaId
-        }
-      },
       include: {
         reachThis: true,
         timeTrial: true,
@@ -77,6 +74,10 @@ export default {
           },
         },
       },
+      where: {
+        creatorId: '1337133700',
+      },
+      take: 100,
     })
 
     return {
@@ -92,16 +93,18 @@ export default {
       userReachThis: user.userGeneratedContent
         .filter((ugc) => ugc.ugcType === 'ReachThis')
         .map((ugc) => extractUGCData(ugc, ['META'])),
-      // userTimeTrials: user.userGeneratedContent
-      //   .filter((ugc) => ugc.ugcType === 'TimeTrial')
-      //   .map((ugc) => extractUGCData(ugc, ['META'])),
       userTimeTrials: [],
-      promotedUGC: promotedUGC.map((ugc) => {
-        return {
-          ...extractUGCData(ugc, ['META']),
-          reason: 3,
-        }
-      }),
+      promotedUGC: [
+        ...promotedUGC
+          // .filter((ugc) => ugc.ugcType === 'ReachThis')
+          .map((ugc) => {
+            return {
+              meta: extractUGCData(ugc, ['META'])?.meta,
+              reason: Math.floor(Math.random() * 5) + 1,
+            }
+          }),
+      ],
+      // promotedUGC: [],
       bookmarks: {
         ugcBookmarks: [],
         challengeBookmarks: [],

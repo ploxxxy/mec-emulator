@@ -37,17 +37,17 @@ More info will be available in the [wiki](https://github.com/ploxxxy/pamplona-fu
 ### Requirements
 - Recent version of Node.js installed using the official Windows installer or via [fnm](https://github.com/Schniz/fnm) on other platforms
 - Local PostgreSQL server and permission to create databases
+- Latest version of [Docker or Docker Desktop](https://www.docker.com) if you decide to use Docker
 
 ### Installation
 Once you have Node.js properly installed, clone the repository and run `npm install` from the root of the project. This will install all the necessary packages. Now, we will prepare the database.
 
-Create a new PostgreSQL database and make sure you can connect to it with an account that has editing permissions. Then, create a new file called `.env` in the project root. In this file add a connection string in the following format:
+Create a new PostgreSQL database and make sure you can connect to it with an account that has editing permissions. Then rename `.env.example` to `.env`, modify connection values if you need to, and run the command `npm run resetdb`. Once that completes successfully, run `npm run dev` to launch the server.
 
-```
-DATABASE_URL=postgresql://[username]:[password]@localhost:5432/[database]
-```
+### Deploying via Docker
+Once Docker or Docker Desktop is installed, clone this repository, rename `.env.example` to `.env`, modify connection values if you need to, and run `docker compose up -d --build` from the root of the project.
 
-To test the connection and initialize the database, run the command `npm run resetdb`. Once that completes successfully, run `npm start` to launch the server.
+Logs can be displayed by using `docker logs -f pamplona-future`. To stop the server and database containers, run `docker compose down`.
 
 ### Connecting
 Add [catalyst-mitm](https://github.com/ploxxxy/catalyst-mitm) to the installation directory of the game to redirect all traffic to localhost. When launched, the game should connect to your new server.

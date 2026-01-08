@@ -1,5 +1,7 @@
 import { ReachThis, TimeTrial, Ugc, UgcEntry, User } from '@prisma/client'
+import { randomUUID } from 'crypto'
 import pino from 'pino'
+import { Readable } from 'stream'
 
 export const logger = pino({
   msgPrefix: '[Gateway] ',
@@ -105,7 +107,7 @@ export const extractUGCData = (
   const needUserStats = dataTypes.includes('USER_STATS')
   const ugcEntry = ugc.ugcEntries?.[0] ?? null
 
-  if (ugc.ugcType === 'ReachThis' && ugc.reachThis) {
+  if (ugc.ugcType === 'ReachThis') {
     const userStats = ugcEntry
       ? {
           reachedAt: ugcEntry.finishedAt,
@@ -125,7 +127,8 @@ export const extractUGCData = (
         ? {
             ugcId: {
               userId: ugc.creatorId,
-              id: ugc.reachThis.id,
+              // temp for promoted ugc testing
+              id: ugc.reachThis?.id || randomUUID(),
             },
             name: ugc.name,
             creatorName: ugc.creator.name,
@@ -134,15 +137,15 @@ export const extractUGCData = (
             published: ugc.published,
             reported: false,
             blocked: false,
-            levelId: ugc.levelId,
+            levelId: -1940918635,
             transform: {
-              x: ugc.transformX,
-              y: ugc.transformY,
-              z: ugc.transformZ,
-              qx: ugc.transformQx,
-              qy: ugc.transformQy,
-              qz: ugc.transformQz,
-              qw: ugc.transformQw,
+              x: new Float(ugc.transformX),
+              y: new Float(ugc.transformY),
+              z: new Float(ugc.transformZ),
+              qx: new Float(ugc.transformQx),
+              qy: new Float(ugc.transformQy),
+              qz: new Float(ugc.transformQz),
+              qw: new Float(ugc.transformQw),
             },
             mapPosition: {
               // Fixes map icon offset
@@ -160,7 +163,7 @@ export const extractUGCData = (
       userStats: needUserStats ? userStats : null,
       userRank: needUserStats ? userRank : null,
     }
-  } else if (ugc.ugcType === 'TimeTrial' && ugc.timeTrial) {
+  } else if (ugc.ugcType === 'TimeTrial') {
     const userStats = ugcEntry
       ? {
           finishedAt: ugcEntry.finishedAt,
@@ -189,7 +192,8 @@ export const extractUGCData = (
         ? {
             ugcId: {
               userId: ugc.creatorId,
-              id: ugc.timeTrial.id,
+              // temp for promoted ugc testing
+              id: ugc.timeTrial?.id || randomUUID(),
             },
             name: ugc.name,
             creatorName: ugc.creator.name,
@@ -198,26 +202,34 @@ export const extractUGCData = (
             published: ugc.published,
             reported: false,
             blocked: false,
-            levelId: ugc.levelId,
+            levelId: -1940918635,
             transform: {
-              x: ugc.transformX,
-              y: ugc.transformY,
-              z: ugc.transformZ,
-              qx: ugc.transformQx,
-              qy: ugc.transformQy,
-              qz: ugc.transformQz,
-              qw: ugc.transformQw,
+              x: new Float(ugc.transformX),
+              y: new Float(ugc.transformY),
+              z: new Float(ugc.transformZ),
+              qx: new Float(ugc.transformQx),
+              qy: new Float(ugc.transformQy),
+              qz: new Float(ugc.transformQz),
+              qw: new Float(ugc.transformQw),
             },
             teleportTransform: {
-              x: ugc.timeTrial.teleportTransformX,
-              y: ugc.timeTrial.teleportTransformY,
-              z: ugc.timeTrial.teleportTransformZ,
-              qx: ugc.timeTrial.teleportTransformQx,
-              qy: ugc.timeTrial.teleportTransformQy,
-              qz: ugc.timeTrial.teleportTransformQz,
-              qw: ugc.timeTrial.teleportTransformQw,
+              x: new Float(ugc.transformX),
+              y: new Float(ugc.transformY),
+              z: new Float(ugc.transformZ),
+              qx: new Float(ugc.transformQx),
+              qy: new Float(ugc.transformQy),
+              qz: new Float(ugc.transformQz),
+              qw: new Float(ugc.transformQw),
+              // x: ugc.timeTrial.teleportTransformX,
+              // y: ugc.timeTrial.teleportTransformY,
+              // z: ugc.timeTrial.teleportTransformZ,
+              // qx: ugc.timeTrial.teleportTransformQx || 0.000001,
+              // qy: ugc.timeTrial.teleportTransformQy,
+              // qz: ugc.timeTrial.teleportTransformQz || 0.000001,
+              // qw: ugc.timeTrial.teleportTransformQw,
             },
-            ugcUrl: `https://mec-gw.ops.dice.se/ugc/prod_default/prod_default/pc/TimeTrial/${ugc.creatorId}/${ugc.timeTrial.id}`,
+            // ugcUrl: `https://mec-gw.ops.dice.se/ugc/prod_default/prod_default/pc/TimeTrial/${ugc.creatorId}/${ugc.timeTrial.id}`,
+            ugcUrl: `https://mec-gw.ops.dice.se/ugc/prod_default/prod_default/pc/TimeTrial/${ugc.creatorId}/${randomUUID()}`,
             typeId: 'TimeTrial',
           }
         : null,
@@ -229,3 +241,66 @@ export const extractUGCData = (
     return null
   }
 }
+
+export const chunkStringFixed = (str: string) => {
+  const chunkSize = 16000
+
+  const readable = new Readable({ objectMode: true })
+  let index = 0
+  readable._read = async () => {
+    if (index >= str.length) {
+      readable.push(null)
+      return
+    }
+
+    const end = Math.min(index + chunkSize, str.length)
+    const chunk = str.substring(index, end)
+    index = end
+
+    // await new Promise((resolve) => setTimeout(resolve, 10))
+
+    readable.push(chunk)
+  }
+
+  return readable
+}
+
+export class Float extends Number {}
+export function monkeyStringify(obj?: object): string {
+  if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
+    return value(obj)
+  }
+  return `{${Object.keys(obj)
+    .map((k) =>
+      typeof obj[k] === 'function' ? null : `"${k}":${value(obj[k])}`
+    )
+    .filter((i) => i)}}`
+}
+function value(val: unknown): string | undefined {
+  switch (typeof val) {
+    case 'string':
+      return `"${val.replace(/\\/g, '\\\\').replace('"', '\\"')}"`
+    case 'number':
+    case 'boolean':
+      return `${val}`
+    case 'function':
+      console.log('got function')
+      return 'null'
+    case 'object':
+      if (val instanceof Date) return `"${val.toISOString()}"`
+      if (val instanceof Float)
+        return Number.isInteger(Number(val)) ? `${val}.0` : `${val}`
+      if (Array.isArray(val)) return `[${val.map(value).join(',')}]`
+      if (val === null) {
+        return 'null'
+      }
+      return monkeyStringify(val)
+  }
+}
+
+// export function monkeyStringify(obj: object): string {
+//   return `{${Object.keys(obj)
+//     .map((k) =>
+//       `"${k}":${(obj[k] instanceof Float) ? Number.isInteger(Number(obj[k])) ? `${obj[k]}.0` : `${obj[k]}` : JSON.stringify(obj[k])}`
+//     )}}`
+// }

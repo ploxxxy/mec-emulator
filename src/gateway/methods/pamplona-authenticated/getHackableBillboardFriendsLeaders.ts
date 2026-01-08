@@ -37,7 +37,11 @@ export default {
       },
     })
 
-    const returnObject: Record<string, unknown> = {}
+    const returnObject: Record<string, unknown> = params.challengeIds.reduce(
+      (acc, challengeId) => { return { [challengeId]: null, ...acc } },
+      {}
+    )
+
     for (const entry of entries) {
       returnObject[entry.challengeStatId] = {
         position: 1,

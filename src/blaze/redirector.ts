@@ -6,13 +6,15 @@ const logger = pino({
   level: 'debug',
 })
 
+const blazePort: number = parseInt(process.env.BLAZE_PORT ?? "25565")
+
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <serverinstanceinfo>
   <address member="0">
       <valu>
-          <hostname>localhost</hostname>
+          <hostname>${(process.env.HOSTNAME ?? "localhost")}</hostname>
           <ip>hello world</ip>
-          <port>25565</port>
+          <port>${blazePort}</port>
       </valu>
   </address>
   <secure>0</secure>
@@ -21,7 +23,7 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
 </serverinstanceinfo>`
 
 const server = http.createServer((req, res) => {
-  logger.debug('[Redirector] Redirected')
+  logger.debug('Redirected')
 
   res.statusCode = 200
   res.setHeader('Content-Type', 'application/xml')
@@ -29,5 +31,5 @@ const server = http.createServer((req, res) => {
 })
 
 server.listen(42230, () =>
-  logger.info('[Redirector] Redirector started')
+  logger.info('Redirector started on port 42230')
 )
