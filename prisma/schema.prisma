@@ -32,19 +32,13 @@ enum Division {
 
 model ProgressionFlag {
   flag      String      @id @unique
-  userStats UserStats[]
 }
 
 model UserStats {
   user   User   @relation(fields: [userId], references: [personaId])
-  userId String
+  userId String @id
 
-  flagRelation ProgressionFlag @relation(fields: [flag], references: [flag])
-  flag         String
-
-  value Int
-
-  @@id([userId, flag])
+  stats Json
 }
 
 enum UgcType {

@@ -23,6 +23,12 @@ export default {
       throw new Error('User not found')
     }
 
+    await db.$executeRaw`
+      UPDATE "UserStats"
+      SET stats = stats || ${JSON.stringify(params.stats)}::jsonb
+      WHERE "userId" = ${personaId}
+    `
+
     // await db.$transaction(
     //   Object.entries(params.stats)
     //     // .filter(([flag]) => {

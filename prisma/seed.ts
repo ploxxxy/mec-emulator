@@ -25,6 +25,11 @@ async function main() {
           detail: '3420869487',
         },
       },
+      userStats: {
+        create: {
+          stats: {}
+        }
+      }
       // itemUnlocks: {
       //   createMany: {
       //     data: items.map((reward) => ({

@@ -59,10 +59,7 @@ export default {
       throw new Error('User not found')
     }
 
-    const userStats: { [key: string]: Float } = {}
-    for (const userFlag of user.userStats) {
-      userStats[userFlag.flag] = new Float(userFlag.value)
-    }
+    const userStats = user.userStats[0]['stats']
 
     const promotedUGC = await db.ugc.findMany({
       include: {
