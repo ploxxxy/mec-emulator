@@ -106,7 +106,7 @@ export const fetchClientConfig = (value: string) => {
             'http://' + (process.env.HOSTNAME ?? "localhost") + ':4000/engagementManager',
           engagementManagerClientId: 'mirrorsedgecatalyst',
           gatewayApiEndpointUrl: 'http://' + (process.env.HOSTNAME ?? "localhost") + ':' + nodePort + '/gatewayApi',
-          gatewayClientId: 'pamplona-backend-as-user-pc',
+          gatewayClientId: 'MirrorsEdgeCatalyst-SERVER-PC',
           gatewayUploadEndpointUrl: 'http://' + (process.env.HOSTNAME ?? "localhost") + ':5000/gatewayUpload',
           messageManagerFetchMessagesIntervalTime: '300.0',
           messageManagerTransientMessagesToFollowers: 'false',
