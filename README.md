@@ -5,33 +5,11 @@ Currently available as a work-in-progress proof of concept. End goal is to repli
 ![image](https://github.com/user-attachments/assets/0edcb839-c66c-4f55-8503-e2dabb4628e5)
 
 ## Current Progress
-More info will be available in the [wiki](https://github.com/ploxxxy/pamplona-future/wiki).
-- [x] Patch the game's SSL certificate verification (Big thanks to WarrantyVoider)
-- [x] Collect and analyze a ton of network packets
-- [x] Implement EA's packet format
-- [x] Create a mock Blaze server to make the game think we're online
-- [ ] Replicate core parts of the Blaze server:
-  - [ ] Authentication
-  - [ ] Per-player config (maybe)
-  - [ ] Real time notifications (created a UGC, beat a record, etc)
-  - [ ] Player location updates
-  - [ ] Runner's Emblem updates
-- [x] Create a mock Gateway API to make the game think we're online
-- [ ] Replicate core parts of the Gateway:
-  - [x] Player inventory & profile
-  - [x] Player customization
-  - [x] Player progress
-  - [x] Hackable billboards
-  - [x] Dashes
-  - [x] Beat L.Es
-  - [ ] TimeTrials
-  - [ ] Replays
-  - [ ] Followers
-  - [ ] Notifications
-  - [ ] Bookmarks
-  - [ ] Stats & latest played
-  - [ ] Divisions
-  - [ ] Authentication
+> [!WARNING]  
+> This project is obsolete, please check out [gridLeak](https://github.com/grid-leak) and [BeatLink](https://github.com/synthic/BeatLink)
+
+> [!NOTE]  
+> As of March 24, 2026, EA have deleted the `pamplona-backend-as-user-pc` (used to fetch your Nucleus auth code for the gateway) and several other OAuth2 client ids related to Mirror's Edge Catalyst, with `MirrorsEdgeCatalyst-SERVER-PC` (used to fetch your Nucleus auth code for the blaze server) remaining as the only working one. If / When they disable this one as well, MEC will no longer be able to connect to this emulator without applying any additional patches to the game.
 
 ## Setup
 ### Requirements
